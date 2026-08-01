@@ -1,20 +1,17 @@
 NAME = hitch
 VERSION = 0.1.0
 TARBALL = $(NAME)-$(VERSION).tar.gz
+SRCDIR = $(shell cd .. && pwd)
 
 srpm:
-	# Vendor Go dependencies
-	go mod vendor
-
-	# Create source tarball with vendored deps
-	mkdir -p $(NAME)-$(VERSION)
-	cp -a cmd internal main.go go.mod go.sum vendor testdata hitch.spec LICENSE Makefile $(NAME)-$(VERSION)/
-	tar czf $(TARBALL) $(NAME)-$(VERSION)
+	# Create source tarball (vendor/ already committed in repo)
+	cd $(SRCDIR) && \
+	mkdir -p $(NAME)-$(VERSION) && \
+	cp -a cmd internal main.go go.mod go.sum vendor testdata hitch.spec LICENSE Makefile .gitignore $(NAME)-$(VERSION)/ && \
+	tar czf $(TARBALL) $(NAME)-$(VERSION) && \
 	rm -rf $(NAME)-$(VERSION)
 
 	# Build SRPM
-	mkdir -p $(outdir)
-	rpmbuild -bs hitch.spec \
-		--define "_sourcedir $(CURDIR)" \
-		--define "_srcrpmdir $(outdir)" \
-		--define "gobuilddir ."
+	rpmbuild -bs $(SRCDIR)/hitch.spec \
+		--define "_sourcedir $(SRCDIR)" \
+		--define "_srcrpmdir $(outdir)"
