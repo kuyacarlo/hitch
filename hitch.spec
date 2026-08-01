@@ -13,7 +13,7 @@ BuildRequires:  git
 Provides:       bundled(golang(*))
 
 %description
-hitch converts Docker Compose files into systemd quadlet units managed by
+hitch converts Docker Compose files into systemd units managed by
 Podman. It handles generation, installation, enable/disable, and lifecycle
 operations for rootless or system-wide containers.
 
@@ -22,18 +22,15 @@ operations for rootless or system-wide containers.
 
 %build
 export GOFLAGS="-mod=vendor"
-mkdir -p %{gobuilddir}/bin
-go build -o %{gobuilddir}/bin/hitch \
-    -ldflags "-X main.version=%{version}" \
-    .
+go build -o hitch -ldflags "-X main.version=%{version}" .
 
 # Generate shell completions
-%{gobuilddir}/bin/hitch completions bash > hitch.bash
-%{gobuilddir}/bin/hitch completions zsh > _hitch
-%{gobuilddir}/bin/hitch completions fish > hitch.fish
+./hitch completions bash > hitch.bash
+./hitch completions zsh > _hitch
+./hitch completions fish > hitch.fish
 
 %install
-install -Dpm 0755 %{gobuilddir}/bin/hitch %{buildroot}%{_bindir}/hitch
+install -Dpm 0755 hitch %{buildroot}%{_bindir}/hitch
 
 # Shell completions
 install -Dpm 0644 hitch.bash %{buildroot}%{_datadir}/bash-completion/completions/hitch
